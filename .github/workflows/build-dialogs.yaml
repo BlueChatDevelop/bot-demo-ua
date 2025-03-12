@@ -23,6 +23,6 @@ jobs:
               uses: actions/checkout@v4
             - name: Start Dialogs Generator
               run: |
-                   /workspace/BotToolkit/Start_Generator.sh ./dialogs.xlsx ./output/${{github.event.inputs.env}}
+                   ~/actions-runner/workspace/BotToolkit/Start_Generator.sh ./dialogs.xlsx ./output/${{github.event.inputs.env}}
             - name: Show Results
               run: cat ./output/${{github.event.inputs.env}}/*/*

@@ -25,4 +25,5 @@ jobs:
               run: |
                    ~/actions-runner/workspace/BotToolkit/Start_Generator.sh ./dialogs.xlsx ./output/${{github.event.inputs.env}}
             - name: Show Results
-              run: cat ./output/${{github.event.inputs.env}}/*/*
+              run: find ./output/${{github.event.inputs.env}}/ -type f -exec cat {} +
+

@@ -10,7 +10,10 @@ on:
             description: "environment to apply changes to"
             default: dev
             required: true
-            type: environment
+            type: choice
+            options:
+              - dev
+              - prod
 
 jobs:
     start-generator:

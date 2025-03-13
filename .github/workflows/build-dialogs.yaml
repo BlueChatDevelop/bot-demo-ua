@@ -33,4 +33,5 @@ jobs:
               run: |
                    export BOT_FOLDER=~/actions-runner/artifacts/dialogs/${{github.event.inputs.env}}
                    dotnet  ~/actions-runner/workspace/DialogsUpdator/DialogsUpdator.dll "$BOT_FOLDER" "$MARIADB_CONNECTION_STRING"
+        needs: start-generator
 

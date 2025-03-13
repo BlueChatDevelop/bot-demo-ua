@@ -23,7 +23,14 @@ jobs:
               uses: actions/checkout@v4
             - name: Start Dialogs Generator
               run: |
-                   ~/actions-runner/workspace/BotToolkit/Start_Generator.sh ./dialogs.xlsx ./output/${{github.event.inputs.env}}
+                   ~/actions-runner/workspace/BotToolkit/Start_Generator.sh ./dialogs.xlsx ~/actions-runner/artifacts/dialogs/${{github.event.inputs.env}}
             - name: Show Results
-              run: find ./output/${{github.event.inputs.env}}/ -type f -exec cat {} +
+              run: find ~/actions-runner/artifacts/dialogs/${{github.event.inputs.env}}/ -type f -exec cat {} +
+    push-changes:
+        runs-on: self-hosted
+        steps:
+            - name: Start Dialogs Updator
+              run: |
+                   export BOT_FOLDER=~/actions-runner/artifacts/dialogs/${{github.event.inputs.env}}
+                   dotnet  ~/actions-runner/workspace/DialogsUpdator/DialogsUpdator.dll "$BOT_FOLDER" "$MARIADB_CONNECTION_STRING"
 

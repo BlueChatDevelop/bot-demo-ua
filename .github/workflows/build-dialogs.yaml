@@ -1,37 +1,43 @@
 name: Build Dialogs
-    
+
 on:
   push:
     branches:
-        - main
+      - main
   workflow_dispatch:
     inputs:
-        env:
-            description: "environment to apply changes to"
-            default: dev
-            required: true
-            type: choice
-            options:
-              - dev
-              - prod
+      env:
+        description: "Environment to apply changes to"
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - prod
+
+env:
+  ENVIRONMENT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.env || 'dev' }}
 
 jobs:
-    start-generator:
-        runs-on: self-hosted
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-            - name: Start Dialogs Generator
-              run: |
-                   ~/actions-runner/workspace/BotToolkit/Start_Generator.sh ./dialogs.xlsx ~/actions-runner/artifacts/dialogs/${{github.event.inputs.env}}
-            - name: Show Results
-              run: find ~/actions-runner/artifacts/dialogs/${{github.event.inputs.env}}/ -type f -exec cat {} +
-    push-changes:
-        runs-on: self-hosted
-        steps:
-            - name: Start Dialogs Updator
-              run: |
-                   export BOT_FOLDER=~/actions-runner/artifacts/dialogs/${{github.event.inputs.env}}
-                   dotnet  ~/actions-runner/workspace/DialogsUpdator/DialogsUpdator.dll "$BOT_FOLDER" "$MARIADB_CONNECTION_STRING"
-        needs: start-generator
+  start-generator:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
+      - name: Start Dialogs Generator
+        run: |
+          ~/actions-runner/workspace/BotToolkit/Start_Generator.sh ./dialogs.xlsx ~/actions-runner/artifacts/dialogs/${{ env.ENVIRONMENT }}
+
+      - name: Show Results
+        run: |
+          find ~/actions-runner/artifacts/dialogs/${{ env.ENVIRONMENT }}/ -type f -exec cat {} +
+
+  push-changes:
+    runs-on: self-hosted
+    needs: start-generator
+    steps:
+      - name: Start Dialogs Updator
+        run: |
+          export BOT_FOLDER=~/actions-runner/artifacts/dialogs/${{ env.ENVIRONMENT }}
+          dotnet ~/actions-runner/workspace/DialogsUpdator/DialogsUpdator.dll "$BOT_FOLDER" "$MARIADB_CONNECTION_STRING"
